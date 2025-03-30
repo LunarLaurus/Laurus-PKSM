@@ -38,6 +38,7 @@
 #include "sav/Sav5.hpp"
 #include "ScriptScreen.hpp"
 #include "StorageScreen.hpp"
+#include "NetworkStorageScreen.hpp"
 #include "utils/crypto.hpp"
 #include "utils/format.hpp"
 #include <format>
@@ -84,6 +85,15 @@ namespace
                 return true;
             case 5:
                 Gui::setScreen(std::make_unique<ConfigScreen>());
+                return true;
+            case 6:
+                if (TitleLoader::save->partyCount() < 1)
+                {
+                    Gui::warn(
+                        i18n::localize("NEED_ONE_POKEMON") + '\n' + i18n::localize("GET_STARTER"));
+                    return false;
+                }
+                Gui::setScreen(std::make_unique<NetworkStorageScreen>());
                 return true;
         }
         return true;
@@ -154,6 +164,10 @@ void MainMenu::makeButtons()
             },
             ui_sheet_emulated_upload_save_button_idx, "", 0, COLOR_BLACK);
     }
+    buttons[8] = std::make_unique<MainMenuButton>(
+        143, 211, 28, 28, []() { return goToScreen(6); }, 
+        ui_sheet_emulated_upload_save_button_idx,
+        "", 0, COLOR_BLACK);
 }
 
 void MainMenu::makeInstructions()
